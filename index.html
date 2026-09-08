@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<!-- スマホのステータスバー／ブラウザUIの色合わせ -->
+<meta name="theme-color" content="#1b1233">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SE9SKD2F92"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SE9SKD2F92');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>恋愛モンスター診断 | あなたの中に眠る恋のケモノを暴く</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #1b1233;
+    --bg-panel: #2a1b47;
+    --bg-panel-2: #35235a;
+    --accent-pink: #ff4d8d;
+    --accent-pink-dark: #d63872;
+    --accent-teal: #5eead4;
+    --text-main: #f5f0ff;
+    --text-sub: #c7b8e6;
+    --line: rgba(245,240,255,0.12);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --shadow-glow: 0 0 40px rgba(255,77,141,0.25);
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html{
+    background-color: var(--bg-deep);
+  }
+
+  body{
+    margin:0; padding:0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: radial-gradient(circle at 50% -10%, #3a2560 0%, var(--bg-deep) 55%, #120b24 100%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    font-family: 'Noto Sans JP', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .display{ font-family: 'Fredoka', 'Noto Sans JP', sans-serif; }
+
+  #app{
+    min-height: 100vh;
+    min-height: 100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .stage{
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fadeUp .45s ease both; }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(14px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* ---------- decorative floating blobs ---------- */
+  .blob{
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: .35;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .blob1{ width: 260px; height: 260px; background: var(--accent-pink); top: -80px; left: -60px; }
+  .blob2{ width: 220px; height: 220px; background: var(--accent-teal); bottom: -60px; right: -60px; }
+
+  #app > .stage{ position: relative; z-index: 1; }
+
+  /* ---------- start screen ---------- */
+  .start-emoji{
+    font-size: 64px;
+    text-align:center;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 8px 24px rgba(255,77,141,0.35));
+  }
+  h1.title{
+    font-size: 28px;
+    line-height: 1.35;
+    text-align:center;
+    margin: 0 0 12px;
+    letter-spacing: 0.02em;
+  }
+  p.lead{
+    color: var(--text-sub);
+    text-align:center;
+    font-size: 15px;
+    line-height: 1.8;
+    margin: 0 0 32px;
+  }
+  .axis-chips{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom: 32px;
+  }
+  .axis-chip{
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    color: var(--text-sub);
+  }
+
+  .btn-primary{
+    display:block;
+    width:100%;
+    border:none;
+    padding: 18px 20px;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: 'Fredoka','Noto Sans JP',sans-serif;
+    color: #1b1233;
+    background: linear-gradient(135deg, var(--accent-pink), #ff8fb8);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-glow);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:active{ transform: scale(0.97); }
+
+  .btn-ghost{
+    display:block;
+    width:100%;
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text-sub);
+    padding: 14px 20px;
+    font-size: 14px;
+    border-radius: var(--radius-md);
+    cursor:pointer;
+  }
+  .btn-ghost:active{ background: var(--bg-panel); }
+
+  /* ---------- question screen ---------- */
+  .progress-wrap{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .progress-track{
+    flex:1;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--bg-panel);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-teal), var(--accent-pink));
+    transition: width .35s ease;
+  }
+  .progress-label{
+    font-size: 12px;
+    color: var(--text-sub);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .q-card{
+    background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 28px 22px 24px;
+  }
+  .q-axis-label{
+    font-size: 12px;
+    color: var(--accent-teal);
+    margin: 0 0 10px;
+    font-weight: 500;
+  }
+  .q-text{
+    font-size: 19px;
+    line-height: 1.6;
+    font-weight: 700;
+    margin: 0 0 24px;
+  }
+
+  .option-btn{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    width:100%;
+    text-align:left;
+    padding: 16px 16px;
+    margin-bottom: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    background: rgba(245,240,255,0.04);
+    color: var(--text-main);
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .option-btn:last-child{ margin-bottom: 0; }
+  .option-btn:active{ transform: scale(0.98); background: rgba(255,77,141,0.12); border-color: var(--accent-pink); }
+  .option-letter{
+    flex-shrink:0;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--bg-deep);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fredoka',sans-serif;
+    font-size: 13px;
+    color: var(--accent-teal);
+    border: 1px solid var(--line);
+  }
+
+  .back-link{
+    display:inline-block;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-sub);
+    background:none; border:none;
+    cursor:pointer;
+    padding: 6px 4px;
+  }
+
+  /* ---------- loading screen ---------- */
+  .loading-wrap{ text-align:center; padding: 60px 10px; }
+  .loading-emoji{
+    font-size: 56px;
+    display:inline-block;
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform: scale(1); }
+    50%{ transform: scale(1.18) rotate(-6deg); }
+  }
+  .loading-text{
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-sub);
+    font-weight: 500;
+  }
+  .loading-dots span{
+    animation: blink 1.4s infinite;
+  }
+  .loading-dots span:nth-child(2){ animation-delay: .2s; }
+  .loading-dots span:nth-child(3){ animation-delay: .4s; }
+  @keyframes blink{ 0%,80%,100%{ opacity: .2; } 40%{ opacity: 1; } }
+
+  /* ---------- result screen ---------- */
+  .result-card{
+    background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 32px 22px 26px;
+    text-align:center;
+  }
+  .monster-img{
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    margin: 0 auto 12px;
+    display: block;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+  }
+  .result-type-code{
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--accent-teal);
+    font-family:'Fredoka',sans-serif;
+    margin: 6px 0 4px;
+  }
+  .result-name{
+    font-size: 26px;
+    font-weight: 700;
+    font-family:'Fredoka','Noto Sans JP',sans-serif;
+    margin: 0 0 12px;
+    line-height: 1.4;
+  }
+  .result-desc{
+    font-size: 14.5px;
+    line-height: 1.9;
+    color: var(--text-sub);
+    text-align:left;
+    margin: 0 0 22px;
+  }
+
+  .compat-row{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .compat-box{
+    flex: 1;
+    background: rgba(94,234,212,0.08);
+    border: 1px solid rgba(94,234,212,0.3);
+    border-radius: var(--radius-sm);
+    padding: 14px 12px;
+    text-align:left;
+  }
+  .compat-box.compat-bad{
+    background: rgba(255,77,141,0.08);
+    border: 1px solid rgba(255,77,141,0.3);
+  }
+  .compat-label{
+    font-size: 11px;
+    color: var(--accent-teal);
+    margin: 0 0 6px;
+    font-weight: 700;
+  }
+  .compat-label.compat-label-bad{
+    color: var(--accent-pink);
+  }
+  .compat-name{
+    font-size: 13.5px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* affiliate CTA slot */
+  .affiliate-slot{
+    border: 1px dashed rgba(255,77,141,0.5);
+    border-radius: var(--radius-md);
+    padding: 18px 16px;
+    margin-bottom: 20px;
+  }
+  .affiliate-note{
+    font-size: 11px;
+    color: var(--text-sub);
+    margin: 0 0 10px;
+  }
+  .affiliate-btn{
+    display:block;
+    width:100%;
+    border:none;
+    padding: 16px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family:'Fredoka','Noto Sans JP',sans-serif;
+    color:#1b1233;
+    background: linear-gradient(135deg, var(--accent-teal), #9ff5e5);
+    border-radius: var(--radius-sm);
+    cursor:pointer;
+  }
+
+  .share-row{
+    display:flex;
+    gap: 10px;
+  }
+  .share-row .btn-ghost{ margin-top:0; }
+
+  footer.small-note{
+    text-align:center;
+    font-size: 11px;
+    color: rgba(199,184,230,0.5);
+    margin-top: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div id="app">
+  <div class="stage">
+
+    <!-- ============ START SCREEN ============ -->
+    <section class="screen active" id="screen-start">
+      <div class="start-emoji">🐲💘</div>
+      <h1 class="title">恋愛モンスター診断</h1>
+      <p class="lead">
+        12の質問に答えて、あなたの中に眠る<br>
+        「恋のケモノ」を暴き出そう。<br>
+        16タイプの中から、あなたの正体が判明します。
+      </p>
+      <div class="axis-chips">
+        <span class="axis-chip">E / I</span>
+        <span class="axis-chip">S / N</span>
+        <span class="axis-chip">T / F</span>
+        <span class="axis-chip">J / P</span>
+      </div>
+      <button class="btn-primary" id="btn-start">診断をはじめる</button>
+    </section>
+
+    <!-- ============ QUESTION SCREEN ============ -->
+    <section class="screen" id="screen-question">
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-label" id="progress-label">1 / 12</div>
+      </div>
+
+      <div class="q-card">
+        <p class="q-axis-label" id="q-axis-label">AXIS</p>
+        <p class="q-text" id="q-text">質問がここに入ります</p>
+        <button class="option-btn" id="opt-a">
+          <span class="option-letter">A</span>
+          <span id="opt-a-text">選択肢A</span>
+        </button>
+        <button class="option-btn" id="opt-b">
+          <span class="option-letter">B</span>
+          <span id="opt-b-text">選択肢B</span>
+        </button>
+      </div>
+
+      <button class="back-link" id="btn-back">← ひとつ前の質問に戻る</button>
+    </section>
+
+    <!-- ============ LOADING SCREEN ============ -->
+    <section class="screen" id="screen-loading">
+      <div class="loading-wrap">
+        <div class="loading-emoji" id="loading-emoji">🔮</div>
+        <p class="loading-text">
+          あなたの恋のケモノを判定中<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ RESULT SCREEN ============ -->
+    <section class="screen" id="screen-result">
+      <div class="result-card">
+        <img id="monster-image" src="" alt="モンスター画像" class="monster-img">
+        <p class="result-type-code" id="result-type-code">TYPE : ????</p>
+        <h2 class="result-name" id="result-name">モンスター名</h2>
+        <p class="result-desc" id="result-desc">説明文がここに入ります。</p>
+
+        <div class="compat-row">
+          <div class="compat-box compat-good">
+            <p class="compat-label">相性の良いタイプ</p>
+            <p class="compat-name" id="result-compat-good">????</p>
+          </div>
+          <div class="compat-box compat-bad">
+            <p class="compat-label compat-label-bad">相性の悪いタイプ</p>
+            <p class="compat-name" id="result-compat-bad">????</p>
+          </div>
+        </div>
+
+        <div class="affiliate-slot">
+          <p class="affiliate-note">あなたにおすすめのマッチングサービス（広告枠）</p>
+          <button class="affiliate-btn" id="affiliate-btn">📸 タイプ別の魅力を引き出すプロの写真を撮る</button>
+        </div>
+
+        <div class="share-box" style="margin-top: 16px; margin-bottom: 12px;">
+          <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">＼ 診断結果をシェアする ／</p>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button id="btn-share-x" class="btn-primary" style="background: #000; color: #fff; border: 1px solid var(--line); padding: 10px; font-size: 13px; flex: 1;">
+              𝕏 ポスト
+            </button>
+            <button id="btn-share-line" class="btn-primary" style="background: #06C755; color: #fff; padding: 10px; font-size: 13px; flex: 1;">
+              💬 LINE送る
+            </button>
+            <button id="btn-share-insta" class="btn-primary" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; padding: 10px; font-size: 13px; flex: 1;">
+              📷 Instaコピー
+            </button>
+          </div>
+        </div>
+
+        <div class="share-row">
+          <button class="btn-ghost" id="btn-retry">もう一度診断する</button>
+        </div>
+      </div>
+      <footer class="small-note">※本診断はエンタメ目的です</footer>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(function(){
+
+  // 1. 質問データ
+  var QUESTIONS = [
+    { axis: "外向 / 内向", text: "気になる人ができたら、まず取る行動は？",
+      a: { text: "すぐアプローチして距離を縮める", letter: "E" },
+      b: { text: "相手をじっくり観察してから動く", letter: "I" } },
+    { axis: "外向 / 内向", text: "デートの誘い方は？",
+      a: { text: "みんなで集まる場をつくって自然に誘う", letter: "E" },
+      b: { text: "一対一でこっそり誘う", letter: "I" } },
+    { axis: "外向 / 内向", text: "恋愛で疲れてしまったときは？",
+      a: { text: "友達に話してエネルギーを充電する", letter: "E" },
+      b: { text: "一人の時間をつくって落ち着く", letter: "I" } },
+
+    { axis: "感覚 / 直感", text: "相手のどこに惹かれる？",
+      a: { text: "話し方や仕草など、具体的な部分", letter: "S" },
+      b: { text: "なんとなく感じる雰囲気やオーラ", letter: "N" } },
+    { axis: "感覚 / 直感", text: "デートプランを立てるなら？",
+      a: { text: "行ったことのある安心できる場所を選ぶ", letter: "S" },
+      b: { text: "まだ行ったことのない場所に挑戦する", letter: "N" } },
+    { axis: "感覚 / 直感", text: "相手との将来を考えるとき？",
+      a: { text: "今の関係を大事に、現実的に考える", letter: "S" },
+      b: { text: "この先どうなるか想像を膨らませる", letter: "N" } },
+
+    { axis: "思考 / 感情", text: "気になる人と喧嘩したらどうする？",
+      a: { text: "何が正しいか、論理的に話し合う", letter: "T" },
+      b: { text: "まず相手の気持ちに寄り添う", letter: "F" } },
+    { axis: "思考 / 感情", text: "相手から恋の相談をされたら？",
+      a: { text: "具体的な解決策を提案する", letter: "T" },
+      b: { text: "気持ちに共感してとにかく話を聞く", letter: "F" } },
+    { axis: "思考 / 感情", text: "好きな人への態度を決めるとき？",
+      a: { text: "冷静にメリット・デメリットを考える", letter: "T" },
+      b: { text: "気持ちのままに動く", letter: "F" } },
+
+    { axis: "判断 / 知覚", text: "デートの計画の立て方は？",
+      a: { text: "事前にしっかり予定を決めておきたい", letter: "J" },
+      b: { text: "その場の流れで自由に決めたい", letter: "P" } },
+    { axis: "判断 / 知覚", text: "連絡のペースは？",
+      a: { text: "決まったリズムでこまめに連絡したい", letter: "J" },
+      b: { text: "気が向いたときに自由にやり取りしたい", letter: "P" } },
+    { axis: "判断 / 知覚", text: "恋愛観として近いのは？",
+      a: { text: "将来を見据えて着実に関係を築きたい", letter: "J" },
+      b: { text: "今この瞬間を楽しみたい", letter: "P" } }
+  ];
+
+  // 2. 16タイプ判定用データ（画像・最新モンスター対応版）
+  var MONSTERS = {
+    INTJ: { name: "孤高の戦略ウルフ", image: "images/wolf.png", desc: "警戒心が強く、自分の世界をしっかり持った戦略家タイプ。一度心を開いた相手には深い愛情を注ぎます。", compat: "ENFP（かまってちゃんウサギ）", badCompat: "ESFP（パリピカワウソ）" },
+    ENFP: { name: "かまってちゃんウサギ", image: "images/rabbit.png", desc: "人懐っこく愛され上手な盛り上げ役。寂しがり屋で、いつも誰かと感情を共有していたいタイプです。", compat: "INFJ（達観ペンギン）", badCompat: "ISTJ（まじめタートル）" },
+    INTP: { name: "引きこもりフクロウ", image: "images/owl.png", desc: "独自の視点と深い思考力を持つマイペース派。自分の興味があることにはとことん没頭します。", compat: "ENTJ（暴君ライオン）", badCompat: "ESFJ（社交的キャット）" },
+    ENTJ: { name: "暴君ライオン", image: "images/lion.png", desc: "リーダーシップ抜群で自信家。目標に向かって突き進む姿が魅力ですが、少し強引になることも。", compat: "INTP（引きこもりフクロウ）", badCompat: "ISFP（気まぐれパンダ）" },
+    ENTP: { name: "ひねくれキツネ", image: "images/fox.png", desc: "頭の回転が速く口達者なアイデアマン。あえて人と違う意見を言って反応を楽しむお茶目な面も。", compat: "INFJ（達観ペンギン）", badCompat: "ISFJ（尽くしすぎクマ）" },
+    INFJ: { name: "達観ペンギン", image: "images/penguin.png", desc: "相手の気持ちを察する能力が高いミステリアスな存在。深く静かな愛情を秘めています。", compat: "ENFP（かまってちゃんウサギ）", badCompat: "ESTP（ウェイウェイドラゴン）" },
+    INFP: { name: "メンヘラコウモリ", image: "images/bat.png", desc: "感性豊かでロマンチスト。自分の世界観をとても大切にし、傷つきやすい繊細な心を持っています。", compat: "ENFJ（おせっかいイヌ）", badCompat: "ESTJ（毒舌ゴリラ）" },
+    ENFJ: { name: "おせっかいイヌ", image: "images/dog.png", desc: "面倒見が良く、みんなの幸せを一番に考える情熱家。人のために全力になれる温かい人柄です。", compat: "INFP（メンヘラコウモリ）", badCompat: "ISTP（マイペースネコ）" },
+    ISTJ: { name: "まじめタートル", image: "images/turtle.png", desc: "誠実で責任感が強く、コツコツ努力するタイプ。約束を守り、安定した関係を築きます。", compat: "ESFP（パリピカワウソ）", badCompat: "ENFP（かまってちゃんウサギ）" },
+    ISFJ: { name: "尽くしすぎクマ", image: "images/bear.png", desc: "思いやり溢れる平和主義者。相手のサポートに回り、陰ながら包み込むような優しさを見せます。", compat: "ESTP（ウェイウェイドラゴン）", badCompat: "INTP（引きこもりフクロウ）" },
+    ESTJ: { name: "毒舌ゴリラ", image: "images/gorilla.png", desc: "現実的で頼りになる仕切り役。言うべきことははっきり伝える、軸のぶれないしっかり者です。", compat: "ISFP（気まぐれパンダ）", badCompat: "INFP（メンヘラコウモリ）" },
+    ESFJ: { name: "社交的キャット", image: "images/pcat.png", desc: "気配り上手で誰からも愛される人気者。場の雰囲気を察して明るく盛り上げます。", compat: "ISTP（マイペースネコ）", badCompat: "INTP（引きこもりフクロウ）" },
+    ISTP: { name: "マイペースネコ", image: "images/wcat.png", desc: "クールで自由を愛する職人肌。縛られるのが苦手で、自分のペースを何より大切にします。", compat: "ESFJ（社交的キャット）", badCompat: "ENFJ（おせっかいイヌ）" },
+    ISFP: { name: "気まぐれパンダ", image: "images/panda.png", desc: "穏やかで芸術的な感性を持つ癒やし系。自分の好きなおしゃれや空間にこだわりがあります。", compat: "ESTJ（毒舌ゴリラ）", badCompat: "ENTJ（暴君ライオン）" },
+    ESTP: { name: "ウェイウェイドラゴン", image: "images/dragon.png", desc: "スリルと冒険を愛する行動派。考えるより先に体が動く、エネルギッシュなエンターテイナー。", compat: "ISFJ（尽くしすぎクマ）", badCompat: "INFJ（達観ペンギン）" },
+    ESFP: { name: "パリピカワウソ", image: "images/kawauso.png", desc: "今この瞬間を楽しむムードメーカー。天真爛漫な笑顔で周りのみんなを元気にします。", compat: "ISTJ（まじめタートル）", badCompat: "INTJ（孤高の戦略ウルフ）" }
+  };
+
+  // 3. 状態管理
+  var current = 0;
+  var answers = [];
+
+  var screens = {
+    start: document.getElementById('screen-start'),
+    question: document.getElementById('screen-question'),
+    loading: document.getElementById('screen-loading'),
+    result: document.getElementById('screen-result')
+  };
+
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.toggle('active', k === name);
+    });
+    window.scrollTo(0,0);
+  }
+
+  // 4. 質問の描画
+  var progressFill = document.getElementById('progress-fill');
+  var progressLabel = document.getElementById('progress-label');
+  var qAxisLabel = document.getElementById('q-axis-label');
+  var qText = document.getElementById('q-text');
+  var optA = document.getElementById('opt-a');
+  var optB = document.getElementById('opt-b');
+  var optAText = document.getElementById('opt-a-text');
+  var optBText = document.getElementById('opt-b-text');
+  var btnBack = document.getElementById('btn-back');
+
+  function renderQuestion(){
+    var q = QUESTIONS[current];
+    var total = QUESTIONS.length;
+
+    progressFill.style.width = (current / total * 100) + '%';
+    progressLabel.textContent = (current + 1) + ' / ' + total;
+    qAxisLabel.textContent = q.axis;
+    qText.textContent = q.text;
+    optAText.textContent = q.a.text;
+    optBText.textContent = q.b.text;
+
+    btnBack.style.visibility = current === 0 ? 'hidden' : 'visible';
+  }
+
+  function selectAnswer(letter){
+    answers[current] = letter;
+    current++;
+    if (current < QUESTIONS.length){
+      renderQuestion();
+    } else {
+      startJudging();
+    }
+  }
+
+  optA.addEventListener('click', function(){
+    selectAnswer(QUESTIONS[current].a.letter);
+  });
+  optB.addEventListener('click', function(){
+    selectAnswer(QUESTIONS[current].b.letter);
+  });
+
+  btnBack.addEventListener('click', function(){
+    if (current > 0){
+      current--;
+      renderQuestion();
+    }
+  });
+
+  // 5. 判定ロジック
+  function calcType(){
+    var counts = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+    answers.forEach(function(letter){ counts[letter]++; });
+
+    var code = '';
+    code += counts.E >= counts.I ? 'E' : 'I';
+    code += counts.S >= counts.N ? 'S' : 'N';
+    code += counts.T >= counts.F ? 'T' : 'F';
+    code += counts.J >= counts.P ? 'J' : 'P';
+    return code;
+  }
+
+  // 6. 判定中演出 → 結果表示
+  var loadingEmoji = document.getElementById('loading-emoji');
+  var loadingEmojis = ['🔮','✨','💘','🐾'];
+
+  function startJudging(){
+    showScreen('loading');
+    var i = 0;
+    var iv = setInterval(function(){
+      i = (i + 1) % loadingEmojis.length;
+      loadingEmoji.textContent = loadingEmojis[i];
+    }, 350);
+
+    setTimeout(function(){
+      clearInterval(iv);
+      showResult();
+    }, 1800);
+  }
+
+  function showResult(){
+    var code = calcType();
+    var monster = MONSTERS[code];
+
+    document.getElementById('monster-image').src = monster.image;
+    document.getElementById('result-type-code').textContent = 'TYPE : ' + code;
+    document.getElementById('result-name').textContent = monster.name;
+    document.getElementById('result-desc').textContent = monster.desc;
+    document.getElementById('result-compat-good').textContent = monster.compat;
+    document.getElementById('result-compat-bad').textContent = monster.badCompat;
+
+    showScreen('result');
+  }
+
+  // 7. スタート / リトライ
+  document.getElementById('btn-start').addEventListener('click', function(){
+    current = 0;
+    answers = [];
+    renderQuestion();
+    showScreen('question');
+  });
+
+  document.getElementById('btn-retry').addEventListener('click', function(){
+    current = 0;
+    answers = [];
+    renderQuestion();
+    showScreen('question');
+  });
+
+  // 8. アフィリエイトリンク
+  var AFFILIATE_URL = "https://px.a8.net/svt/ejp?a8mat=4BC3YL+3VBGC2+4HMW+5YJRM";
+
+  document.getElementById('affiliate-btn').addEventListener('click', function(){
+    window.open(AFFILIATE_URL, '_blank', 'noopener');
+  });
+
+  // X（Twitter）シェア処理
+  document.getElementById('btn-share-x').addEventListener('click', function(){
+    var code = calcType();
+    var monster = MONSTERS[code];
+    var siteUrl = window.location.href;
+    
+    var shareText = "【私の恋愛モンスター】\n" + monster.name + "でした！\n\nあなたの中に眠る恋のケモノは？\n#恋愛モンスター診断 #16タイプ診断\n" + siteUrl;
+    
+    var appUrl = "twitter://post?message=" + encodeURIComponent(shareText);
+    var webUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
+
+    window.location.href = appUrl;
+    setTimeout(function() {
+      if (!document.hidden) {
+        window.location.href = webUrl;
+      }
+    }, 1000);
+  });
+
+  // Instagram シェア処理
+  document.getElementById('btn-share-insta').addEventListener('click', function(){
+    var code = calcType();
+    var monster = MONSTERS[code];
+    var siteUrl = window.location.href;
+    
+    var copyText = "私の恋愛モンスターは【" + monster.name + "】でした！\n" + siteUrl + "\n#恋愛モンスター診断";
+    
+    navigator.clipboard.writeText(copyText).then(function() {
+      alert("診断結果をコピーしました！Instagramのストーリーズや投稿に貼り付けてシェアしてください✨");
+      window.open("https://www.instagram.com/", '_blank');
+    }).catch(function() {
+      alert("コピーに失敗しました。画面キャプチャを撮影してInstagramに投稿してみてください！");
+    });
+  });
+
+  // LINE シェア処理
+  document.getElementById('btn-share-line').addEventListener('click', function(){
+    var code = calcType();
+    var monster = MONSTERS[code];
+    var siteUrl = window.location.href;
+    
+    var shareText = "【私の恋愛モンスター】\n" + monster.name + "でした！\n\nあなたの中に眠る恋のケモノは？\n" + siteUrl;
+    var lineUrl = "https://line.me/R/share?text=" + encodeURIComponent(shareText);
+    
+    window.location.href = lineUrl;
+  });
+
+})();
+</script>
+</body>
+</html>
